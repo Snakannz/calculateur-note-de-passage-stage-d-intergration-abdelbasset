@@ -16,6 +16,34 @@ const travail3Value = document.getElementById('travail3-value');
 const totalGradeDisplay = document.getElementById('total-grade');
 const passingStatus = document.getElementById('passing-status');
 
+// API key for Giphy
+const GIPHY_API_KEY = "hpvZycW22qCjn5cRM1xtWB8NKq4dQ2My"; // This is Giphy's public beta key
+
+// Function to fetch a random appropriate GIF
+async function fetchGif(isPassing) {
+    const searchTerm = isPassing ? "celebration" : "sad";
+    const rating = "g"; // G-rated content only
+
+    try {
+        const response = await fetch(
+            `https://api.giphy.com/v1/gifs/random?api_key=${GIPHY_API_KEY}&tag=${searchTerm}&rating=${rating}`
+        );
+
+        if (!response.ok) {
+            throw new Error("Network response was not ok");
+        }
+
+        const data = await response.json();
+        return data.data.images.fixed_height.url;
+    } catch (error) {
+        console.error("Error fetching GIF:", error);
+        // Fallback images if API fails
+        return isPassing
+            ? "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYXU4ZHlyY3hvN3k1OTc3bDZ3bTFjcm11ejZ0YjE5NndmNWZvM3RvbCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l0MYt5jPR6QX5pnqM/giphy.gif"
+            : "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaGh5MmY3cTBqamx6anhvZWUxNmpqbmZtYnJwNGdyNDd3amtidDU5MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/BEob5qwFkSJ7G/giphy.gif";
+    }
+}
+
 // Fonction pour calculer la note finale
 function calculateTotalGrade() {
     // Mettre à jour les valeurs des variables
@@ -41,13 +69,24 @@ function calculateTotalGrade() {
     totalGradeDisplay.textContent = `Note Finale: ${finalGrade.toFixed(1)}%`;
 
     // Vérifier si la note de passage est atteinte
-    if (finalGrade >= 50) {
+    const isPassing = finalGrade >= 50;
+
+    if (isPassing) {
         passingStatus.textContent = 'Vous avez atteint la note de passage! 👍';
         passingStatus.className = 'passing-status pass';
     } else {
         passingStatus.textContent = `Il vous manque ${(50 - finalGrade).toFixed(1)}% pour passer`;
         passingStatus.className = 'passing-status fail';
     }
+
+    // Update the GIF based on pass/fail status
+    updateResultGif(isPassing);
+}
+
+// Function to update the GIF
+async function updateResultGif(isPassing) {
+    const resultGif = document.getElementById('resultGif');
+    resultGif.src = await fetchGif(isPassing);
 }
 
 // Événements pour les sliders
@@ -94,7 +133,7 @@ darkModeToggle.addEventListener('change', function() {
     }
 });
 
-// Calculer la note initiale
+// Calculer la note initiale et charger le thème
 document.addEventListener('DOMContentLoaded', function() {
     calculateTotalGrade();
     loadThemePreference();
