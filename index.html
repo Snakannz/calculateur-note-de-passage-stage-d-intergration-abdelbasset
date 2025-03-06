@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculateur de Notes</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+    }
+
+    body {
+      background-color: #f5f5f5;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+      color: #333;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 20px;
+      background-color: #2c3e50;
+      color: white;
+      border-radius: 8px;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .card {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    h1, h2 {
+      margin-bottom: 15px;
+    }
+
+    .grades-display {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    .grade-item {
+      padding: 15px;
+      background-color: #ecf0f1;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .grade-value {
+      font-size: 24px;
+      font-weight: bold;
+      color: #2980b9;
+    }
+
+    .grade-weight {
+      font-size: 14px;
+      color: #7f8c8d;
+      margin-top: 5px;
+    }
+
+    .slider-container {
+      margin-bottom: 15px;
+    }
+
+    .slider-container label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    .slider-value {
+      display: inline-block;
+      width: 50px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .total-grade {
+      font-size: 28px;
+      text-align: center;
+      padding: 15px;
+      background-color: #2980b9;
+      color: white;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+
+    .passing-status {
+      font-size: 18px;
+      text-align: center;
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+
+    .pass {
+      background-color: #27ae60;
+      color: white;
+    }
+
+    .fail {
+      background-color: #e74c3c;
+      color: white;
+    }
+
+    footer {
+      margin-top: 30px;
+      text-align: center;
+      font-size: 14px;
+      color: #7f8c8d;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Calculateur de Notes</h1>
+  <p>Visualisez vos notes et calculez votre moyenne</p>
+</header>
+
+<div class="container">
+  <section class="card">
+    <h2>Vos Notes Actuelles</h2>
+    <div class="grades-display">
+      <div class="grade-item">
+        <div>Travail 1</div>
+        <div class="grade-value">11.5/20</div>
+        <div class="grade-weight">Poids: 20%</div>
+      </div>
+      <div class="grade-item">
+        <div>Travail 2</div>
+        <div class="grade-value">7/15</div>
+        <div class="grade-weight">Poids: 15%</div>
+      </div>
+      <div class="grade-item">
+        <div>Travail 4</div>
+        <div class="grade-value">8/20</div>
+        <div class="grade-weight">Poids: 20%</div>
+      </div>
+      <div class="grade-item">
+        <div>Journal de Bord</div>
+        <div class="grade-value">7/10</div>
+        <div class="grade-weight">Poids: 10%</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Ajustez les Notes Variables</h2>
+    <div class="slider-container">
+      <label for="bradley-grade">Évaluation de Bradley (25%): <span id="bradley-value" class="slider-value">80%</span></label>
+      <input type="range" id="bradley-grade" min="0" max="100" value="80">
+    </div>
+    <div class="slider-container">
+      <label for="travail3-grade">Travail 3 (10%): <span id="travail3-value" class="slider-value">65%</span></label>
+      <input type="range" id="travail3-grade" min="0" max="100" value="65">
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Résultat</h2>
+    <div class="total-grade" id="total-grade">Note Finale: 60.0%</div>
+    <div class="passing-status pass" id="passing-status">Vous avez atteint la note de passage! 👍</div>
+    <p style="text-align: center; margin-top: 5px; font-style: italic;">Note de passage: 50%</p>
+  </section>
+</div>
+
+<footer>
+  <p>Créé par Snakannz pour vous aider à visualiser vos notes | Hébergé sur GitHub Pages</p>
+</footer>
+
+<script>
+  // Définition des poids et des notes
+  const grades = {
+    travail1: { value: 11.5, max: 20, weight: 0.20 },
+    travail2: { value: 7, max: 15, weight: 0.15 },
+    travail4: { value: 8, max: 20, weight: 0.20 },
+    journal: { value: 7, max: 10, weight: 0.10 },
+    bradley: { value: 80, max: 100, weight: 0.25 },
+    travail3: { value: 65, max: 100, weight: 0.10 }
+  };
+
+  // Éléments DOM
+  const bradleySlider = document.getElementById('bradley-grade');
+  const travail3Slider = document.getElementById('travail3-grade');
+  const bradleyValue = document.getElementById('bradley-value');
+  const travail3Value = document.getElementById('travail3-value');
+  const totalGradeDisplay = document.getElementById('total-grade');
+  const passingStatus = document.getElementById('passing-status');
+
+  // Fonction pour calculer la note finale
+  function calculateTotalGrade() {
+    // Mettre à jour les valeurs des variables
+    grades.bradley.value = parseInt(bradleySlider.value);
+    grades.travail3.value = parseInt(travail3Slider.value);
+
+    // Calculer les pourcentages pour chaque travail
+    const travail1Percent = (grades.travail1.value / grades.travail1.max) * 100;
+    const travail2Percent = (grades.travail2.value / grades.travail2.max) * 100;
+    const travail4Percent = (grades.travail4.value / grades.travail4.max) * 100;
+    const journalPercent = (grades.journal.value / grades.journal.max) * 100;
+
+    // Calculer la note finale
+    const finalGrade =
+            (travail1Percent * grades.travail1.weight) +
+            (travail2Percent * grades.travail2.weight) +
+            (travail4Percent * grades.travail4.weight) +
+            (journalPercent * grades.journal.weight) +
+            (grades.bradley.value * grades.bradley.weight) +
+            (grades.travail3.value * grades.travail3.weight);
+
+    // Mettre à jour les affichages
+    totalGradeDisplay.textContent = `Note Finale: ${finalGrade.toFixed(1)}%`;
+
+    // Vérifier si la note de passage est atteinte
+    if (finalGrade >= 50) {
+      passingStatus.textContent = 'Vous avez atteint la note de passage! 👍';
+      passingStatus.className = 'passing-status pass';
+    } else {
+      passingStatus.textContent = `Il vous manque ${(50 - finalGrade).toFixed(1)}% pour passer`;
+      passingStatus.className = 'passing-status fail';
+    }
+  }
+
+  // Événements pour les sliders
+  bradleySlider.addEventListener('input', function() {
+    bradleyValue.textContent = this.value + '%';
+    calculateTotalGrade();
+  });
+
+  travail3Slider.addEventListener('input', function() {
+    travail3Value.textContent = this.value + '%';
+    calculateTotalGrade();
+  });
+
+  // Calculer la note initiale
+  calculateTotalGrade();
+</script>
+</body>
+</html>
