@@ -72,10 +72,10 @@ function calculateTotalGrade() {
     const isPassing = finalGrade >= 50;
 
     if (isPassing) {
-        passingStatus.textContent = 'Vous avez atteint la note de passage! 👍';
+        passingStatus.textContent = 'Let\'s go t\'as atteint la note de passage! 🎉';
         passingStatus.className = 'passing-status pass';
     } else {
-        passingStatus.textContent = `Il vous manque ${(50 - finalGrade).toFixed(1)}% pour passer`;
+        passingStatus.textContent = `RIP 💀 Il te manque ${(50 - finalGrade).toFixed(1)}% pour passer`;
         passingStatus.className = 'passing-status fail';
     }
 
